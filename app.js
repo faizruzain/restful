@@ -88,14 +88,67 @@ app.route('/articles/:articleTitle')
   const articleTitle = req.params.articleTitle;
 
   Articles.findOne({title: articleTitle}, (err, doc) => {
-    if (!err) {
+    if (doc) {
       res.send(doc);
-    } else {
-      res.send(err);
+    } else if (!doc) {
+      res.send('No article was found');
     }
   });
 })
 
+.put((req, res) => {
+
+  const articleTitle = req.params.articleTitle;
+  // https://mongoosejs.com/docs/deprecations.html#update
+  Articles.replaceOne(
+    {title: articleTitle},
+    {title: req.body.title, content: req.body.content},
+    {overwrite: true},
+    (err) => {
+      if (!err) {
+        res.send('Updated!')
+      } else {
+        console.log(err);
+      }
+    }
+  );
+
+})
+
+.patch((req, res) => {
+
+  const articleTitle = req.params.articleTitle;
+
+  Articles.updateOne(
+    {title: articleTitle},
+    {$set: req.body},
+    (err) => {
+      if (!err) {
+        res.send('Patched!');
+      } else {
+        res.send(err);
+      }
+    }
+  );
+
+})
+
+.delete((req, res) => {
+
+  const articleTitle = req.params.articleTitle;
+
+  Articles.deleteOne(
+    {title: articleTitle},
+    (err) => {
+      if (!err) {
+        res.send('Deleted!');
+      } else {
+        res.send(err);
+      }
+    }
+  );
+
+});
 // ############################ /articles/:params ############################
 
 
